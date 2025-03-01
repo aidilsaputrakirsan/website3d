@@ -177,39 +177,47 @@ class FishSystem {
         }
     }
 
-    setRandomGlowColor(fish) {
-        // Choose from bioluminescent color palette
-        const glowColors = [
-            0x00ffff, // Cyan
-            0x4dffa6, // Aqua green
-            0x00a3ff, // Light blue
-            0x4da6ff  // Blue
-        ];
-        
-        const colorIndex = Math.floor(Math.random() * glowColors.length);
-        const glowColor = glowColors[colorIndex];
-        
-        // Set color to all glowing elements
-        fish.userData.glowColor.set(glowColor);
-        
-        // Update light color
-        const light = fish.getObjectByName('fishLight');
-        if (light) {
-            light.color.set(glowColor);
-        }
-        
-        // Update emissive color for body and tail
-        fish.traverse((child) => {
-            if (child.isMesh) {
-                child.material.emissive.set(glowColor);
-                
-                // Spots should be fully emissive
-                if (child.name === 'glowSpot') {
-                    child.material.color.set(glowColor);
-                }
+    // Perbaikan fungsi setRandomGlowColor di fish.js
+        setRandomGlowColor(fish) {
+            // Choose from bioluminescent color palette
+            const glowColors = [
+                0x00ffff, // Cyan
+                0x4dffa6, // Aqua green
+                0x00a3ff, // Light blue
+                0x4da6ff  // Blue
+            ];
+            
+            const colorIndex = Math.floor(Math.random() * glowColors.length);
+            const glowColor = glowColors[colorIndex];
+            
+            // Set color to all glowing elements
+            fish.userData.glowColor = new THREE.Color(glowColor);
+            
+            // Update light color
+            const light = fish.getObjectByName('fishLight');
+            if (light) {
+                light.color.set(glowColor);
             }
-        });
-    }
+            
+            // Update emissive color for body and tail
+            fish.traverse((child) => {
+                if (child.isMesh && child.material) {
+                    // Check if the material has emissive property before trying to set it
+                    if (child.material.emissive !== undefined) {
+                        child.material.emissive.set(glowColor);
+                    } else {
+                        // For materials without emissive property (like MeshBasicMaterial)
+                        // Just set the color instead
+                        child.material.color.set(glowColor);
+                    }
+                    
+                    // Spots should be fully emissive
+                    if (child.name === 'glowSpot') {
+                        child.material.color.set(glowColor);
+                    }
+                }
+            });
+        }
 
     update(time, deltaTime, mousePosition = null, camera = null) {
         // Update each fish

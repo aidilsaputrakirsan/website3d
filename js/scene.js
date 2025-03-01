@@ -81,6 +81,7 @@ class SceneManager {
         };
     }
 
+    // Perbaikan di scene.js - initRenderer
     initRenderer() {
         // Create WebGL renderer
         this.renderer = new THREE.WebGLRenderer({
@@ -94,11 +95,13 @@ class SceneManager {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        
+        // Gunakan outputColorSpace sebagai pengganti outputEncoding yang sudah deprecated
+        this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+        
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.renderer.toneMappingExposure = 1.0;
     }
-
     initSystems() {
         // Initialize particle system
         this.particleSystem = new ParticleSystem(this.scene);
@@ -138,13 +141,34 @@ class SceneManager {
         }
     }
 
-    initPostProcessing() {
+    // Perbaikan initPostProcessing di scene.js
+initPostProcessing() {
+    // Coba-coba periksa apakah EffectComposer tersedia
+    try {
+        // Skip post-processing jika THREE.EffectComposer tidak tersedia
+        if (typeof THREE.EffectComposer === 'undefined') {
+            console.warn("Post-processing tidak tersedia. THREE.EffectComposer tidak ditemukan.");
+            return;
+        }
+        
         // Initialize composer for post-processing effects
         this.composer = new THREE.EffectComposer(this.renderer);
+        
+        // Skip jika RenderPass tidak tersedia
+        if (typeof THREE.RenderPass === 'undefined') {
+            console.warn("Post-processing tidak lengkap. THREE.RenderPass tidak ditemukan.");
+            return;
+        }
         
         // Add render pass
         const renderPass = new THREE.RenderPass(this.scene, this.camera);
         this.composer.addPass(renderPass);
+        
+        // Skip jika UnrealBloomPass tidak tersedia
+        if (typeof THREE.UnrealBloomPass === 'undefined') {
+            console.warn("Bloom effect tidak tersedia. THREE.UnrealBloomPass tidak ditemukan.");
+            return;
+        }
         
         // Add bloom effect for glow
         const bloomPass = new THREE.UnrealBloomPass(
@@ -154,50 +178,67 @@ class SceneManager {
             0.85  // threshold
         );
         this.composer.addPass(bloomPass);
-        
-        // These effects need to be loaded dynamically
-        this.loadPostProcessingEffects();
+    } catch (error) {
+        console.warn("Error initializing post-processing:", error);
     }
+}
 
-    async loadPostProcessingEffects() {
-        try {
-            // Dynamically load required modules
-            await new Promise((resolve) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/addons/postprocessing/EffectComposer.js';
-                script.onload = resolve;
-                document.head.appendChild(script);
-            });
-            
-            await new Promise((resolve) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/addons/postprocessing/RenderPass.js';
-                script.onload = resolve;
-                document.head.appendChild(script);
-            });
-            
-            await new Promise((resolve) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/addons/postprocessing/ShaderPass.js';
-                script.onload = resolve;
-                document.head.appendChild(script);
-            });
-            
-            await new Promise((resolve) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/addons/postprocessing/UnrealBloomPass.js';
-                script.onload = resolve;
-                document.head.appendChild(script);
-            });
-            
-            this.loadingProgress += 25;
-            this.updateLoadingProgress();
-            this.initPostProcessing();
-        } catch (error) {
-            console.error('Error loading post-processing effects:', error);
-            // Fall back to standard rendering if post-processing fails
+        // Perbaikan pada loadPostProcessingEffects di scene.js
+        async loadPostProcessingEffects() {
+            try {
+                // Dynamically load required modules with proper paths for r159
+                await new Promise((resolve) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/examples/js/postprocessing/EffectComposer.js';
+                    script.onload = resolve;
+                    document.head.appendChild(script);
+                });
+                
+                await new Promise((resolve) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/examples/js/postprocessing/RenderPass.js';
+                    script.onload = resolve;
+                    document.head.appendChild(script);
+                });
+                
+                await new Promise((resolve) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/examples/js/postprocessing/ShaderPass.js';
+                    script.onload = resolve;
+                    document.head.appendChild(script);
+                });
+                
+                await new Promise((resolve) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/examples/js/postprocessing/UnrealBloomPass.js';
+                    script.onload = resolve;
+                    document.head.appendChild(script);
+                });
+                
+                this.loadingProgress += 25;
+                this.updateLoadingProgress();
+                this.initPostProcessing();
+            } catch (error) {
+                console.error('Error loading post-processing effects:', error);
+                // Fall back to standard rendering if post-processing fails
+            }
         }
-    }
+
+        // Perbaikan pada render method
+        render() {
+            // Check if post-processing is available
+            if (this.composer && typeof THREE.EffectComposer !== 'undefined' && this.composer.render) {
+                try {
+                    this.composer.render();
+                } catch (error) {
+                    console.warn("Error in composer.render(), falling back to standard rendering:", error);
+                    this.renderer.render(this.scene, this.camera);
+                }
+            } else {
+                // Fallback to standard rendering
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
 
     initEventListeners() {
         // Window resize
@@ -346,13 +387,4 @@ class SceneManager {
         }
     }
 
-    render() {
-        // Check if post-processing is available
-        if (this.composer && typeof THREE.EffectComposer !== 'undefined') {
-            this.composer.render();
-        } else {
-            // Fallback to standard rendering
-            this.renderer.render(this.scene, this.camera);
-        }
-    }
 }

@@ -132,20 +132,39 @@ function initializeNavigation() {
     initializeUIControls();
 }
 
+// Perbaikan initializeUIControls di main.js
 function initializeUIControls() {
     // Toggle audio button
     const toggleAudioBtn = document.getElementById('toggle-audio');
     if (toggleAudioBtn) {
         // Create audio element for background ambient sound
         const audio = document.createElement('audio');
-        audio.src = 'https://example.com/ambient.mp3'; // Placeholder URL - replace with actual ambient sound
+        
+        // Ganti URL audio dengan URL yang valid atau kosongkan
+        // audio.src = 'https://example.com/ambient.mp3'; // URL placeholder tidak valid
+        audio.src = ''; // URL kosong (audio dinonaktifkan)
+        // Sebagai alternatif, gunakan URL audio yang sebenarnya:
+        // audio.src = 'assets/audio/ambient.mp3';
+        
         audio.loop = true;
         audio.volume = 0.3;
         document.body.appendChild(audio);
         
         toggleAudioBtn.addEventListener('click', () => {
+            // Periksa apakah audio memiliki src yang valid
+            if (!audio.src) {
+                console.warn('Audio source is not set.');
+                return;
+            }
+            
             Utils.UI.toggleAudio(audio, toggleAudioBtn);
         });
+        
+        // Ganti icon menjadi muted (karena audio tidak ada)
+        const icon = toggleAudioBtn.querySelector('i');
+        if (icon) {
+            icon.className = 'fas fa-volume-mute';
+        }
     }
     
     // Handle window scroll animations

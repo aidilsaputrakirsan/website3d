@@ -10,6 +10,26 @@
     <!-- Preload assets untuk kinerja lebih baik -->
     <link rel="preload" href="assets/textures/water_normal.jpg" as="image">
     <link rel="preload" href="assets/textures/particle.png" as="image">
+    
+    <!-- 
+        Note: Three.js versi lama yang menggunakan CDN memicu warning.
+        Versi terbaru Three.js disarankan menggunakan ES Modules.
+        Di masa depan, pertimbangkan untuk memperbarui ke:
+        <script type="module">
+            import * as THREE from 'https://cdn.skypack.dev/three@latest';
+            // kode Anda...
+        </script>
+    -->
+    
+    <!-- Three.js dan Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.159.0/three.min.js"></script>
+    <!-- PostProcessing modules - dimuat sebelum scene.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <!-- GSAP untuk animasi -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -159,8 +179,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.159.0/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/lights.js"></script>
     <script src="js/particles.js"></script>
