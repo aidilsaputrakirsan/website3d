@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio 3D Interaktif</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Preload assets untuk kinerja lebih baik -->
+    <link rel="preload" href="assets/textures/water_normal.jpg" as="image">
+    <link rel="preload" href="assets/textures/particle.png" as="image">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-container">
+        <div class="loader"></div>
+        <p>Memuat Dunia Bioluminescence...</p>
+    </div>
+
+    <!-- Canvas untuk Three.js -->
+    <canvas id="scene-container"></canvas>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">Portfolio</div>
+        <nav>
+            <ul>
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Sections -->
+    <main>
+        <section id="home" class="section active">
+            <div class="content">
+                <h1>Selamat Datang di Portfolio Saya</h1>
+                <p>Jelajahi dunia bioluminescent interaktif sambil melihat karya-karya saya.</p>
+                <div class="scroll-indicator">
+                    <p>Scroll untuk menjelajah</p>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="section">
+            <div class="content">
+                <h2>Tentang Saya</h2>
+                <div class="about-container">
+                    <div class="about-text">
+                        <p>Saya adalah seorang developer dengan passion untuk memadukan teknologi dan kreativitas. Spesialisasi saya termasuk pengembangan web, desain interaktif, dan visualisasi 3D.</p>
+                        <p>Dengan pengalaman dalam beragam proyek, saya selalu mencari cara inovatif untuk menyampaikan pesan melalui pengalaman digital yang imersif.</p>
+                    </div>
+                    <div class="skills">
+                        <h3>Keahlian</h3>
+                        <ul>
+                            <li>Web Development</li>
+                            <li>Three.js & WebGL</li>
+                            <li>UI/UX Design</li>
+                            <li>3D Modeling</li>
+                            <li>Animation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="section">
+            <div class="content">
+                <h2>Proyek</h2>
+                <div class="projects-grid">
+                    <!-- Proyek akan diisi di sini -->
+                    <div class="project-card">
+                        <div class="project-image"></div>
+                        <h3>Visualisasi Data 3D</h3>
+                        <p>Visualisasi interaktif dari dataset kompleks menggunakan Three.js</p>
+                    </div>
+                    <div class="project-card">
+                        <div class="project-image"></div>
+                        <h3>Web AR Experience</h3>
+                        <p>Aplikasi web dengan fitur augmented reality untuk produk retail</p>
+                    </div>
+                    <div class="project-card">
+                        <div class="project-image"></div>
+                        <h3>Interactive Storytelling</h3>
+                        <p>Naratif berbasis web dengan elemen interaktif dan animasi</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section">
+            <div class="content">
+                <h2>Kontak</h2>
+                <div class="contact-container">
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name">Nama</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Pesan</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Kirim Pesan</button>
+                    </form>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <p>email@example.com</p>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <p>Jakarta, Indonesia</p>
+                        </div>
+                        <div class="social-links">
+                            <a href="#" class="social-icon"><i class="fab fa-github"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- UI Controls -->
+    <div class="ui-controls">
+        <button id="toggle-info" class="control-btn">
+            <i class="fas fa-info-circle"></i>
+        </button>
+        <button id="toggle-audio" class="control-btn">
+            <i class="fas fa-volume-mute"></i>
+        </button>
+        <button id="toggle-fullscreen" class="control-btn">
+            <i class="fas fa-expand"></i>
+        </button>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="info-panel">
+        <div class="panel-header">
+            <h3>Interaksi</h3>
+            <button id="close-info" class="close-btn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="panel-content">
+            <p><i class="fas fa-mouse"></i> <span>Gerakkan mouse untuk melihat sekitar</span></p>
+            <p><i class="fas fa-scroll"></i> <span>Scroll untuk navigasi</span></p>
+            <p><i class="fas fa-hand-pointer"></i> <span>Klik pada ikan untuk berinteraksi</span></p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.159.0/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/lights.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/river.js"></script>
+    <script src="js/fish.js"></script>
+    <script src="js/scene.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
